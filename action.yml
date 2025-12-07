@@ -1,25 +1,62 @@
-name: 'Setup V Build'
-description: 'Setup a V environment by downloading and unpacking or building the V compiler to the PATH.'
+name: 'Setup V (Vlang) Build'
+description: 'Setup a V (Vlang) environment by downloading and unpacking or building the V compiler to the PATH.'
 author: prantlf
+
+branding:
+  icon: power
+  color: blue
 
 inputs:
   version:
-    description: 'version specification (latest, weekly, master, version number or a commit hash)'
+    description: >-
+      Specify the version of V to use. It can be `latest` (the latest published semantic version),
+      `weekly` (the latest weekly release), `master` (the latest commit in the `master` branch),
+      a semantic version number (tag name) or a commit hash.
     default: weekly
   use-cache:
-    description: 'set to `false` to ignore the cache and always download and install or build'
+    description: >-
+      Set to `false` to ignore the cache and always perform the full installation,
+      either by downloading and unpacking a binary, or by downloading sources and building.
     default: 'true'
+  force-build:
+    description: >-
+      Set to `true` to always build V from sources, even if the binary archive is available.
+    default: 'false'
+  install-dependencies:
+    description: >-
+      Set to `false` to prevent module dependencies from `v.mod` from being installed automatically.
+    default: 'true'
+  global-dependencies:
+    description: >-
+      Set to `false` to install module dependencies from `v.mod` to `./modules` instead of to `~/.vmodules`.
+    default: 'true'
+  modules-dir:
+    description: >-
+      Set the directory for the locally installed dependencies. It is `src/modules` if `src` exists, otherwise `modules`.
+    default: ''
+  token:
+    description: >-
+      Authorization token to inspect releases and commits in the `vlang/v` repository.
+      Either a GitHub personal access token or the GitHub workflow token. And if even that is not set, the GitHub workflow token from the action-execution context will be used as default.
+    default: ${{ github.token }}
 
 outputs:
   version:
-    description: 'actually installed version of V'
+    description: >-
+      The actually installed version of V, as returned by `v -V`.
   bin-path:
-    description: 'the directory with the V compiler'
+    description: >-
+      The complete path to the directory with the V compiler.
   v-bin-path:
-    de-ccription: 'the path to the V compiler executable'
-  usedCache:
-    description: 'a boolean value to indicate if the cache was hit'
+    description: >-
+      The complete path to the V compiler executable.
+  used-cache:
+    description: >-
+      A boolean value indicating if the installation succeeded from the cache.
+  was-built:
+    description: >-
+      A boolean value indicating if the V compiler was built from sources.
 
 runs:
-  using: node16
+  using: 'node20'
   main: 'dist/index.js'
